@@ -8,6 +8,9 @@ public abstract class CoffeeDecorator implements Coffee {
     protected final Coffee decoratedCoffee;
 
     public CoffeeDecorator(Coffee coffee) {
+        if (coffee == null) {
+            throw new NullPointerException("Coffee to be decorated cannot be null");
+        }
         this.decoratedCoffee = coffee;
     }
 

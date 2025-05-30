@@ -53,6 +53,7 @@ public class ImageProxy implements Image {
         if (realImage != null) {
             System.out.println("Unloading image: " + filename);
             realImage = null;
+            accessCount = 0;
         }
     }
 

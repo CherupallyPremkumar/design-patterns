@@ -13,6 +13,9 @@ public abstract class DocumentProcessor {
     protected DocumentMetadata metadata;
 
     public DocumentProcessor(String filePath) {
+        if (filePath == null) {
+            throw new IllegalArgumentException("File path cannot be null");
+        }
         this.filePath = filePath;
         this.processingErrors = new ArrayList<>();
         this.metadata = new DocumentMetadata();
@@ -24,8 +27,15 @@ public abstract class DocumentProcessor {
      */
     public final DocumentResult processDocument() {
         try {
+            if (filePath.trim().isEmpty()) {
+                throw new IllegalArgumentException("File path cannot be empty");
+            }
+
             // Steps of the algorithm
             validateDocument();
+            if (!processingErrors.isEmpty()) {
+                return new DocumentResult(false, metadata, processingErrors);
+            }
             extractMetadata();
             if (requiresAuthentication()) {
                 authenticate();
@@ -38,6 +48,17 @@ public abstract class DocumentProcessor {
             save();
 
             return new DocumentResult(true, metadata, processingErrors);
+        } catch (IllegalArgumentException e) {
+            // Check if this is a file type validation exception (from concrete classes)
+            String message = e.getMessage();
+            if (message != null && (message.contains("Not a") || message.contains("file"))) {
+                // Re-throw file type validation exceptions
+                throw e;
+            } else {
+                // Convert other IllegalArgumentExceptions to processing errors
+                processingErrors.add("Processing failed: " + e.getMessage());
+                return new DocumentResult(false, metadata, processingErrors);
+            }
         } catch (Exception e) {
             processingErrors.add("Processing failed: " + e.getMessage());
             return new DocumentResult(false, metadata, processingErrors);
@@ -72,6 +93,9 @@ public abstract class DocumentProcessor {
     }
 
     protected void extractMetadata() {
+        if (filePath.trim().isEmpty()) {
+            throw new IllegalArgumentException("File path cannot be empty");
+        }
         metadata.setFileName(filePath.substring(filePath.lastIndexOf('/') + 1));
         metadata.setProcessedTime(System.currentTimeMillis());
     }

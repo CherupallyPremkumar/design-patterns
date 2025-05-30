@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ImageGalleryTest {
     private ImageGallery gallery;
-    private static final long MEMORY_LIMIT = 2000 * 1500 * 3; // Enough for 2 HD images
+    private static final long MEMORY_LIMIT = 1920 * 1080 * 3 * 2; // Enough for 2 HD images
 
     @BeforeEach
     void setUp() {
